@@ -40,8 +40,17 @@
             const num2 = parseFloat(document.getElementById('num2').value) || 0;
             const num3 = parseFloat(document.getElementById('num3').value) || 0;
             const num4 = parseFloat(document.getElementById('num4').value) || 0;
-            const result = wrapper(num1, num2, num4, num3); // Example using the library
+            const elem = document.getElementById('gval').value || 'Al'; // Default to Aluminium if not selected
+            const result = wrapper(num1, num2, num4, num3, elem); // Example using the library
+            const symbols = {
+                'Al': 'Aluminium',
+                'Li': 'Lithium',
+                'Fe': 'Iron',
+                'Zr': 'Zirconium',
+                'Zn': 'Zink'
+            };
             document.getElementById('result').innerHTML = `${result} L`; // value = `Result: ${result}`;
+            document.getElementById('element').innerHTML = `H<sub>2</sub> Content in ${symbols[elem]}`;
         }
 
         function bench(){
@@ -70,8 +79,19 @@
     </script>
 </head>
 <body>
-    <h1>Lithium Content</h1>
-    <label for="num1">Li Percentage (%):</label>
+    <h1 id="element">H<sub>2</sub> Content in</h1>
+    <div class="header" style="margin-left: 100px;">
+    <span> Element: |     
+        <select name="gvalx" id="gval" onchange="updateResult();">
+        <option value="Al">Aluminium</option>
+        <option value="Li">Lithium</option>
+        <option value="Fe">Iron</option>
+        <option value="Zr">Zirconium</option>
+        <option value="Zn">Zink</option>
+        </select>
+    </span>
+    </div>
+    <label for="num1">Percentage (%):</label>
     <input type="number" id="num1" value="12" oninput="updateResult();">
     <label for="num3">Atm pressure (kPa):</label>
     <input type="number" id="num3" value="101.3" oninput="updateResult();">
