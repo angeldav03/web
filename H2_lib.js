@@ -32,8 +32,4 @@ function wrapper(percentage, grams, temp, press, elem) {
     }
 }
 
-function fib(n){
-    // if(n == 0) return 0;
-    if(n <= 1) return n;
-    else return fib(n - 1) + fib(n - 2);
-}
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lithium Content</title>
+    <!-- https://cdnjs.cloudflare.com/ajax/libs/calculations/1.0.0 -->
+    <script src="H2_lib.js"></script>
+    <script>
+        // var MyModule = null; // declare globally
+
+        function updateResult() {
+            const num1 = parseFloat(document.getElementById('num1').value) || 0;
+            const num2 = parseFloat(document.getElementById('num2').value) || 0;
+            const num3 = parseFloat(document.getElementById('num3').value) || 0;
+            const num4 = parseFloat(document.getElementById('num4').value) || 0;
+            const elem = document.getElementById('gval').value || 'Al'; // Default to Aluminium if not selected
+            const result = wrapper(num1, num2, num4, num3, elem); // Example using the library
+            const symbols = {
+                'Al': 'Aluminium',
+                'Li': 'Lithium',
+                'Fe': 'Iron',
+                'Zr': 'Zirconium',
+                'Zn': 'Zink'
+            };
+            document.getElementById('result').innerHTML = `${result} L`; // value = `Result: ${result}`;
+            document.getElementById('element').innerHTML = `H<sub>2</sub> Content in ${symbols[elem]}`;
+        }
+    </script>
+</head>
+<body>
+    <h1 id="element">H<sub>2</sub> Content in</h1>
+    <div class="header" style="margin-left: 100px;">
+    <span> Element: |     
+        <select name="gvalx" id="gval" onchange="updateResult();">
+        <option value="Al">Aluminium</option>
+        <option value="Li">Lithium</option>
+        <option value="Fe">Iron</option>
+        <option value="Zr">Zirconium</option>
+        <option value="Zn">Zink</option>
+        </select>
+    </span>
+    </div>
+    <label for="num1">Percentage (%):</label>
+    <input type="number" id="num1" value="100" oninput="updateResult();">
+    <label for="num3">Atm pressure (kPa):</label>
+    <input type="number" id="num3" value="101.3" oninput="updateResult();">
+    <br>
+    <label for="num2">Sample weight (g):</label>
+    <input type="number" id="num2" oninput="updateResult();">
+    <label for="num4">Temperature (°C):</label>
+    <input type="number" id="num4" value="20" oninput="updateResult();">
+    <br>
+    <label for="results">Result:</label>
+    <textarea id="result" readonly></textarea>
+    <br>
+    <br>
+    <br>
+</body>
+</html>

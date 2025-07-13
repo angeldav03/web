@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lithium Content</title>
-    <!-- https://cdnjs.cloudflare.com/ajax/libs/calculations/1.0.0 -->
-    <script src="Mylib.js"></script>
+    <style>h1{text-align: center; color: aliceblue;}
+        p{color: blue; font-weight: normal; font-size: large;}
+        label{color: blue; font-weight: bold; font-size: large;}
+    </style>
+    <title>Davide's Page</title>
+
     <script type="module">
         import init, {add, subtract, fibon} from './test/wasm_test.js';
 
@@ -31,26 +36,11 @@
             window.run();
         });
     </script>
-    <script src="./testc/fibonc.js"></script>
     <script>
-        // var MyModule = null; // declare globally
-
-        function updateResult() {
-            const num1 = parseFloat(document.getElementById('num1').value) || 0;
-            const num2 = parseFloat(document.getElementById('num2').value) || 0;
-            const num3 = parseFloat(document.getElementById('num3').value) || 0;
-            const num4 = parseFloat(document.getElementById('num4').value) || 0;
-            const elem = document.getElementById('gval').value || 'Al'; // Default to Aluminium if not selected
-            const result = wrapper(num1, num2, num4, num3, elem); // Example using the library
-            const symbols = {
-                'Al': 'Aluminium',
-                'Li': 'Lithium',
-                'Fe': 'Iron',
-                'Zr': 'Zirconium',
-                'Zn': 'Zink'
-            };
-            document.getElementById('result').innerHTML = `${result} L`; // value = `Result: ${result}`;
-            document.getElementById('element').innerHTML = `H<sub>2</sub> Content in ${symbols[elem]}`;
+        function fib(n){
+            // if(n == 0) return 0;
+            if(n <= 1) return n;
+            else return fib(n - 1) + fib(n - 2);
         }
 
         function bench(){
@@ -61,7 +51,9 @@
             var time = end.getTime() - start.getTime();
             document.getElementById('js_res').innerHTML = `(JS) Input ${zsd} Result: ${res}, time taken: ${time} ms`;
         }
-
+    </script>
+    <script src="./testc/fibonc.js"></script>
+    <script>
         // Make sure this matches the filename (`mymodule.js`)
         function benchc(){
             MyModule().then((Module) => {
@@ -78,34 +70,25 @@
 
     </script>
 </head>
+
 <body>
-    <h1 id="element">H<sub>2</sub> Content in</h1>
-    <div class="header" style="margin-left: 100px;">
-    <span> Element: |     
-        <select name="gvalx" id="gval" onchange="updateResult();">
-        <option value="Al">Aluminium</option>
-        <option value="Li">Lithium</option>
-        <option value="Fe">Iron</option>
-        <option value="Zr">Zirconium</option>
-        <option value="Zn">Zink</option>
-        </select>
-    </span>
-    </div>
-    <label for="num1">Percentage (%):</label>
-    <input type="number" id="num1" value="12" oninput="updateResult();">
-    <label for="num3">Atm pressure (kPa):</label>
-    <input type="number" id="num3" value="101.3" oninput="updateResult();">
+    <table style="width:100%; background-image: url('./pics/Carbon_Normal.png');">
+        <tr>
+    <td style="width:25%;"><img src="./pics/Logo_Dav.png" height="80"/></td>
+    <td style="width:50%;"><h1 style="font-weight: bolder; font-size: 50px;">Davide's Page</h1></td>
+    <td style="width:25%;" align="right"><img src="./pics/Logo_Dav.png" height="80"/></td>
+        </tr>
+    </table>
     <br>
-    <label for="num2">Sample weight (g):</label>
-    <input type="number" id="num2" oninput="updateResult();">
-    <label for="num4">Temperature (°C):</label>
-    <input type="number" id="num4" value="20" oninput="updateResult();">
-    <br>
-    <label for="results">Result:</label>
-    <textarea id="result" readonly></textarea>
+    <img src="./pics/Dav.png" height="300"/>
+    <p>Here is where I write something about me. But I guess nobody is really interested in it.
+    <br>Here following some content of my interest</p>
     <br>
     <br>
     <br>
+    <h2> Execution speed code/scripts. </h2>
+    <p>I enjoy particularly to understand the performances of computing instructions obained through differen programming languages and compilers/interpreters.</p>
+    <p>You can find one repository here: <a href="https://github.com/angeldav03/YAPLD">https://github.com/angeldav03/YAPLD</a></p>
     <h2 id="other">Following here below a test between pure JS and WASM-rust</h2>
     <label for="fibonacci">Fibonacci:</label>
     <input type="number" id="fibonacci" value="12">
@@ -116,5 +99,29 @@
     <p id="wasm_res">WASM Result</p>
     <p id="cwasm_res">CWASM Result</p>
     <br>
+    <br>
+    <h2>EDA and Embedded programming</h2>
+    <p>Electronics and embedded programming are cool topics that, with the benefit of time, 
+        I would explore more in depth than I am currently doing.<br> Here (<a href="https://github.com/angeldav03/STM32L432KC_pg"><b>LINK</b></a>) 
+        one of my favourite MCU types: STM32 has been programmed to relay some UART messages on a small 128x64 px display</p>
+    <br>
+    <br>
+    <h2>Science related computing</h2>
+    <p><a href="./H2_calculator.html"><b>The H<sub>2</sub> calculator</b></a> is an interactive html/JS page that is helping evaluating
+    which one is the most practical material to be used as a storage for hydrogen H<sub>2</sub>.<br>
+    Hypothetically this calculator page can be used also for analysing how much of the bulk material has undergone oxidation.<br>
+    The page will be in continuous change/improvement.
+    </p>
+    <br>
+    <br>
+    <h2>Acoustic levitation</h2>
+    <p>Once Hessam (github links: <a href="https://github.com/hessammehr"><b>here</b></a> and 
+        <a href="https://github.com/MehrResearch"><b>here</b></a>) 
+        and I were geeking around with some acoustice levitation.</p>
+    <p>Turns out it is really really cool to watch it in action and it takes a lot of soldering.<br>
+    <b>Lesson learned from that day:</b> Solder flux taste disgusting!</p>
+    <p> Following an animated gif of the acoustic levitation of a piece of porexpan and some droplets of water.</p>
+    <img src="./pics/AcousticLev.gif" height="800"/>
+
 </body>
 </html>
