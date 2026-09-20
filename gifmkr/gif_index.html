@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gifMkr</title>
+<meta name="description" content="Build animated GIFs from images and video, entirely in your browser.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🎞️</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <h1><span class="mark">▶</span> gif-Mkr</h1>
+  <p class="tagline">Images and video in, animated GIF out &mdash; nothing leaves your machine.</p>
+  <span id="wasm-status" class="pill pill-wait">loading encoder&hellip;</span>
+</header>
+
+<main>
+  <!-- ─────────────────────────  sources + timeline  ───────────────────────── -->
+  <section class="col-main">
+
+    <div id="dropzone" class="dropzone" tabindex="0" role="button"
+         aria-label="Add images or video files">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="dz-icon">
+        <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" fill="none" stroke="currentColor"
+              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3.5 15v3a2.5 2.5 0 002.5 2.5h12a2.5 2.5 0 002.5-2.5v-3" fill="none"
+              stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <p class="dz-title">Drop files here, or <button type="button" id="browse" class="linkish">browse</button></p>
+      <p class="dz-sub">PNG · JPEG · GIF · WebP · BMP · TIFF · ICO &nbsp;&middot;&nbsp; MP4 · WebM · MOV · AVI · MPEG</p>
+      <input type="file" id="file-input" multiple accept="image/*,video/*" hidden>
+    </div>
+
+    <!-- Populated when a video is added; one card per pending video. -->
+    <div id="video-cards"></div>
+
+    <div id="timeline-wrap" class="panel" hidden>
+      <div class="panel-head">
+        <h2>Frames <span id="frame-count" class="count">0</span></h2>
+        <div class="toolbar">
+          <button type="button" data-order="name">Sort by name</button>
+          <button type="button" data-order="reverse">Reverse</button>
+          <button type="button" data-order="shuffle">Shuffle</button>
+          <button type="button" id="clear-frames" class="danger">Clear</button>
+        </div>
+      </div>
+      <p class="hint">Drag a frame to reorder it. Click to select; <kbd>&larr;</kbd>/<kbd>&rarr;</kbd>
+        to move the selection, <kbd>Alt</kbd>&nbsp;+&nbsp;<kbd>&larr;</kbd>/<kbd>&rarr;</kbd> to move the
+        frame itself, <kbd>Delete</kbd> to remove it.</p>
+      <ol id="timeline" class="timeline"></ol>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────  settings  ─────────────────────────────── -->
+  <aside class="col-side">
+    <form id="settings" class="panel">
+
+      <fieldset>
+        <legend>Output size</legend>
+        <div class="row">
+          <label class="field">Width
+            <input type="number" id="out-width" min="1" max="65535" step="1" value="480">
+          </label>
+          <label class="field">Height
+            <input type="number" id="out-height" min="1" max="65535" step="1" value="270">
+          </label>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="lock-aspect" checked> Lock aspect ratio
+        </label>
+        <button type="button" id="fit-first" class="wide">Match first frame</button>
+
+        <label class="field">Framing
+          <select id="fit-mode">
+            <option value="0" selected>Contain &mdash; letterbox to fit</option>
+            <option value="1">Cover &mdash; crop to fill</option>
+            <option value="2">Stretch &mdash; ignore aspect ratio</option>
+          </select>
+        </label>
+        <div class="row">
+          <label class="field">Scaling
+            <select id="resample">
+              <option value="0">Nearest (pixel art)</option>
+              <option value="1">Fast</option>
+              <option value="2">Balanced</option>
+              <option value="3" selected>Sharp (Lanczos)</option>
+            </select>
+          </label>
+          <label class="field">Background
+            <input type="color" id="bg-color" value="#000000">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Timing</legend>
+        <div class="row">
+          <label class="field">Rate
+            <select id="rate-mode">
+              <option value="fps" selected>Frames per second</option>
+              <option value="ms">Milliseconds per frame</option>
+            </select>
+          </label>
+          <label class="field"><span id="rate-label">fps</span>
+            <input type="number" id="rate-value" min="0.1" step="0.1" value="10">
+          </label>
+        </div>
+        <p id="rate-note" class="note" hidden></p>
+        <div class="row">
+          <label class="field">Loop
+            <select id="loop-mode">
+              <option value="0" selected>Forever</option>
+              <option value="n">A set number of times</option>
+            </select>
+          </label>
+          <label class="field" id="loop-count-field" hidden>Plays
+            <input type="number" id="loop-count" min="1" max="65535" step="1" value="3">
+          </label>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="pingpong"> Bounce (play forwards, then back)
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Quality</legend>
+        <label class="field">
+          Colours <output id="colors-out">256</output>
+          <input type="range" id="colors" min="2" max="256" step="1" value="256">
+        </label>
+        <label class="field">
+          Palette effort <output id="effort-out">balanced</output>
+          <input type="range" id="effort" min="1" max="30" step="1" value="10">
+        </label>
+        <label class="check">
+          <input type="checkbox" id="dither"> Dither &mdash; smoother gradients, larger file
+        </label>
+        <label class="check">
+          <input type="checkbox" id="optimize" checked> Store only what changes between frames
+        </label>
+        <label class="field" id="tolerance-field">
+          Motion threshold <output id="tolerance-out">0</output>
+          <input type="range" id="tolerance" min="0" max="32" step="1" value="0">
+          <span class="note">Raise this for camera footage so sensor noise is not
+            mistaken for movement.</span>
+        </label>
+        <label class="check" id="alpha-field" hidden>
+          <input type="checkbox" id="keep-alpha"> Keep source transparency
+        </label>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" id="encode" class="primary" disabled>Create GIF</button>
+        <button type="button" id="cancel" class="ghost" hidden>Cancel</button>
+      </div>
+      <div id="progress-wrap" class="progress" hidden>
+        <div id="progress-bar" class="progress-bar"></div>
+        <span id="progress-text" class="progress-text"></span>
+      </div>
+    </form>
+
+    <div id="result" class="panel result" hidden>
+      <h2>Your GIF</h2>
+      <img id="result-img" alt="The generated animated GIF, playing">
+      <dl class="stats">
+        <div><dt>Size</dt><dd id="stat-size">&mdash;</dd></div>
+        <div><dt>Frames</dt><dd id="stat-frames">&mdash;</dd></div>
+        <div><dt>Duration</dt><dd id="stat-duration">&mdash;</dd></div>
+        <div><dt>Encoded in</dt><dd id="stat-time">&mdash;</dd></div>
+      </dl>
+      <a id="download" class="primary button" download="animation.gif">Download</a>
+    </div>
+  </aside>
+</main>
+
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
